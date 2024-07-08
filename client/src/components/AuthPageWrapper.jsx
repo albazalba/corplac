@@ -7,7 +7,7 @@ export default function AuthPageWrapper({ children }) {
   };
   return (
     <div className="flex h-[90vh]">
-      <div className="flex flex-1 items-center">
+      <div className=" flex-1 items-center hidden lg:inline-flex">
         <p className="text-[64px] px-10 font-semibold text-slate-700">
           Effortless
           <br /> Property

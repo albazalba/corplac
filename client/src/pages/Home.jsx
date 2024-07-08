@@ -1,18 +1,38 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import SwiperCore from "swiper";
 import "swiper/css/bundle";
 import ListingItem from "../components/ListingItem";
 import BG from "../assets/bg-image.jpg";
+import { FaSearch } from "react-icons/fa";
 
 export default function Home() {
   const [offerListings, setOfferListings] = useState([]);
   const [saleListings, setSaleListings] = useState([]);
   const [rentListings, setRentListings] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+
   SwiperCore.use([Navigation]);
   console.log(offerListings);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('searchTerm', searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search]);
+
   useEffect(() => {
     const fetchOfferListings = async () => {
       try {
@@ -64,6 +84,21 @@ export default function Home() {
           <br />
           We have a wide range of properties for you to choose from.
         </div>
+        <form
+          onSubmit={handleSubmit}
+          className='bg-slate-100 py-3 px-5 rounded-2xl flex items-center w-100'
+        >
+          <input
+            type='text'
+            placeholder='Search...'
+            className='bg-transparent focus:outline-none w-64 sm:w-[450px] rounded-2xl'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button>
+            <FaSearch className='text-slate-600' />
+          </button>
+        </form>
         <Link
           to={"/search"}
           className="text-xs sm:text-sm text-blue-400 font-bold hover:underline"
@@ -76,8 +111,8 @@ export default function Home() {
       <Swiper navigation>
         {offerListings &&
           offerListings.length > 0 &&
-          offerListings.map((listing) => (
-            <SwiperSlide>
+          offerListings.map((listing, index) => (
+            <SwiperSlide key={index}>
               <div
                 style={{
                   background: `url(${listing.imageUrls[0]}) center no-repeat`,
